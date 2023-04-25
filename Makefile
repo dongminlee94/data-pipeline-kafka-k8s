@@ -42,10 +42,8 @@ lint:
 ##############
 #   docker   #
 ##############
-docker-build:
-	docker build --platform linux/amd64 -f Dockerfile.$(DOCKER_IMG_NAME) -t ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest .
-
-docker-push:
+docker-image:
+	docker build --platform linux/amd64 -f Dockerfile.$(DOCKER_IMG_NAME) -t ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest . &&\
 	docker push ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest
 
 ###############
@@ -85,3 +83,13 @@ mongodb-clean:
 	helm uninstall mongodb -n mongodb
 	kubectl delete namespace mongodb
 	rm -r ~/.nohup
+
+######################
+#   data generator   #
+######################
+data-generator:
+	helm upgrade data-generator helm/data-generator \
+		-n data-generator --create-namespace --install
+
+data-generator-clean:
+	helm uninstall data-generator -n data-generator
