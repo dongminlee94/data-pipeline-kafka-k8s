@@ -5,7 +5,11 @@ description = "A data pipeline example for iris data on K8s"
 authors = [
     {name = "dongminlee94", email = "kid33629@gmail.com"},
 ]
-dependencies = []
+dependencies = [
+    "pymongo>=4.3.3",
+    "pandas>=2.0.1",
+    "scikit-learn>=1.2.2",
+]
 requires-python = ">=3.10,<3.11"
 readme = "README.md"
 
