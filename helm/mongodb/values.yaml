@@ -1,0 +1,25 @@
+replicaCount: 1
+
+version: 6.0.1
+
+env:
+  MONGO_USER: myuser
+  MONGO_PASSWORD: mypassword
+
+service:
+  type: LoadBalancer
+  port: 27017
+  targetPort: 27017
+
+persistence:
+  data:
+    accessModes: ["ReadWriteOnce"]
+    size: 10Gi
+  logs:
+    accessModes: ["ReadWriteOnce"]
+    size: 1Gi
+
+ingress:
+  ip: 127.0.0.1
+
+resources: {}

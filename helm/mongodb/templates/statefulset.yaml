@@ -1,0 +1,52 @@
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: {{ include "mongodb.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+spec:
+  members: {{ .Values.replicaCount }}
+  type: ReplicaSet
+  version: {{ .Values.version }}
+  security:
+    authentication:
+      modes: ["SCRAM"]
+  statefulSet:
+    spec:
+      volumeClaimTemplates:
+      - metadata:
+          name: data-volume
+          labels:
+            mongodb-volume: data
+        spec:
+          accessModes: {{ .Values.persistence.data.accessModes }}
+          resources:
+            requests:
+              storage: {{ .Values.persistence.data.size }}
+      - metadata:
+          name: logs-volume
+          labels:
+            mongodb-volume: logs
+        spec:
+          accessModes: {{ .Values.persistence.logs.accessModes }}
+          resources:
+            requests:
+              storage: {{ .Values.persistence.logs.size }}
+  users:
+  - name: {{ .Values.env.MONGO_USER }}
+    db: admin
+    passwordSecretRef:
+      name: {{ include "mongodb.fullname" . }}
+    roles:
+    - name: clusterAdmin
+      db: admin
+    - name: dbAdminAnyDatabase
+      db: admin
+    - name: userAdminAnyDatabase
+      db: admin
+    - name: readWriteAnyDatabase
+      db: admin
+    scramCredentialsSecretName: my-scram
+  additionalMongodConfig:
+    storage.wiredTiger.engineConfig.journalCompressor: zlib

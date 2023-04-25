@@ -1,13 +1,13 @@
 PYTHON=3.10
 BASENAME=$(shell basename $(CURDIR))
 PROFILE_NAME=iris-data-pipeline-k8s
+DOCKER_IMG_NAME := data-generator
 
+######################
+#   initialization   #
+######################
 env:
 	conda create -y -n $(BASENAME) python=$(PYTHON)
-
-all: init format lint
-
-check: format lint
 
 install-pdm:
 	@echo "Install pdm";\
@@ -27,13 +27,30 @@ init:
 	pdm install
 	pdm run pre-commit install
 
+#######################
+#   static analysis   #
+#######################
+check: format lint
+
 format:
 	pdm run black .
 
 lint:
-	pdm run pyright src
+	pdm run pyright
 	pdm run ruff src --fix
 
+##############
+#   docker   #
+##############
+docker-build:
+	docker build --platform linux/amd64 -f Dockerfile.$(DOCKER_IMG_NAME) -t ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest .
+
+docker-push:
+	docker push ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest
+
+###############
+#   cluster   #
+###############
 cluster:
 	minikube start --driver=docker --profile $(PROFILE_NAME) --extra-config=kubelet.housekeeping-interval=10s --cpus=max --memory=max
 	minikube addons enable metrics-server --profile $(PROFILE_NAME)
@@ -41,3 +58,30 @@ cluster:
 
 cluster-clean:
 	minikube delete --profile $(PROFILE_NAME)
+
+#######################
+#   mongodb-operator  #
+#######################
+mongodb-operator:
+	helm repo add mongodb https://mongodb.github.io/helm-charts
+	helm upgrade community-operator mongodb/community-operator \
+		-n mongodb-operator --create-namespace --install \
+		--set operator.watchNamespace="*"
+
+mongodb-operator-clean:
+	helm uninstall community-operator -n mongodb-operator
+
+###############
+#   mongodb   #
+###############
+mongodb:
+	kubectl create namespace mongodb
+	helm template -n mongodb --show-only templates/database_roles.yaml mongodb/community-operator | kubectl apply -f -
+	helm upgrade mongodb helm/mongodb \
+		-n mongodb --create-namespace --install
+	mkdir ~/.nohup && nohup minikube tunnel -p $(PROFILE_NAME) > ~/.nohup/minikube-tunnel-$(date +%Y-%m-%d-%Hh-%Ss) 2>&1 &
+
+mongodb-clean:
+	helm uninstall mongodb -n mongodb
+	kubectl delete namespace mongodb
+	rm -r ~/.nohup
