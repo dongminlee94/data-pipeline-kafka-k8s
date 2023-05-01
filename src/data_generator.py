@@ -10,7 +10,7 @@ from sklearn.datasets import load_iris
 
 def create_collection(client: MongoClient) -> Collection:
     """Create collection."""
-    database = client["mydatabase"]
+    database = client["mongodatabase"]
     if "iris_data" not in database.list_collection_names():
         database.create_collection("iris_data")
     return database["iris_data"]
@@ -52,8 +52,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     client = MongoClient(
-        username="myuser",
-        password="mypassword",
+        username="mongouser",
+        password="mongopassword",
         host=args.db_host,
         port=27017,
         authSource="admin",

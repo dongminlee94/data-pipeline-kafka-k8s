@@ -1,27 +1,26 @@
-# Default values for mongodb.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
-version: 6.0.1
+image:
+  repository: postgres
+  tag: 14.3
+  pullPolicy: IfNotPresent
 
 env:
-  MONGO_USER: mongouser
-  MONGO_PASSWORD: mongopassword
+  POSTGRES_USER: postgresuser
+  POSTGRES_PASSWORD: postgrespassword
+  POSTGRES_DB: postgresdatabase
 
 service:
   type: LoadBalancer
-  port: 27017
-  targetPort: 27017
+  port: 5432
+  targetPort: 5432
 
 persistence:
-  data:
-    accessModes: ["ReadWriteOnce"]
-    size: 10Gi
-  logs:
-    accessModes: ["ReadWriteOnce"]
-    size: 1Gi
+  accessModes: ReadWriteOnce
+  size: 10Gi
 
 ingress:
   ip: 127.0.0.1

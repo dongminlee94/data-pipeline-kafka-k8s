@@ -1,17 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "mongodb.name" . }}
+  name: {{ include "postgres.name" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: mongodb-svc
+    {{- include "postgres.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-  - name: mongodb
+  - name: postgres
     port: {{ .Values.service.port }}
     targetPort: {{ .Values.service.targetPort }}
     protocol: TCP
   selector:
-    app: mongodb-svc
-    statefulset.kubernetes.io/pod-name: {{ include "mongodb.name" . }}-0
+    {{- include "postgres.selectorLabels" . | nindent 4 }}

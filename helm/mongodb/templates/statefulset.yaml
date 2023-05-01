@@ -1,7 +1,7 @@
 apiVersion: mongodbcommunity.mongodb.com/v1
 kind: MongoDBCommunity
 metadata:
-  name: {{ include "mongodb.fullname" . }}
+  name: {{ include "mongodb.name" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "mongodb.labels" . | nindent 4 }}
@@ -37,7 +37,7 @@ spec:
   - name: {{ .Values.env.MONGO_USER }}
     db: admin
     passwordSecretRef:
-      name: {{ include "mongodb.fullname" . }}
+      name: {{ include "mongodb.name" . }}
     roles:
     - name: clusterAdmin
       db: admin
