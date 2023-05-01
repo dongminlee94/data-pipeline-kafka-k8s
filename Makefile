@@ -39,9 +39,9 @@ lint:
 	pdm run pyright
 	pdm run ruff src --fix
 
-##############
-#   docker   #
-##############
+####################
+#   docker image   #
+####################
 docker-image:
 	docker build --platform linux/amd64 -f Dockerfile.$(DOCKER_IMG_NAME) -t ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest . &&\
 	docker push ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest
@@ -57,13 +57,13 @@ cluster:
 cluster-clean:
 	minikube delete --profile $(PROFILE_NAME)
 
-###############
-#   access   #
-###############
-access:
+#################
+#   localhost   #
+#################
+localhost:
 	mkdir ~/.nohup && nohup minikube tunnel -p $(PROFILE_NAME) > ~/.nohup/minikube-tunnel-$(date +%Y-%m-%d-%Hh-%Ss) 2>&1 &
 
-access-clean:
+localhost-clean:
 	rm -r ~/.nohup
 
 #######################
