@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "postgres.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: {{ include "postgres.name" . }}
+            port:
+              number: {{ .Values.service.port }}
+        path: /
+        pathType: Prefix
+status:
+  loadBalancer:
+    ingress:
+    - ip: {{ .Values.ingress.ip }}

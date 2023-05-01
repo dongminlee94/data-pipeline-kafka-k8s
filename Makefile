@@ -57,6 +57,15 @@ cluster:
 cluster-clean:
 	minikube delete --profile $(PROFILE_NAME)
 
+###############
+#   access   #
+###############
+access:
+	mkdir ~/.nohup && nohup minikube tunnel -p $(PROFILE_NAME) > ~/.nohup/minikube-tunnel-$(date +%Y-%m-%d-%Hh-%Ss) 2>&1 &
+
+access-clean:
+	rm -r ~/.nohup
+
 #######################
 #   mongodb-operator  #
 #######################
@@ -77,12 +86,10 @@ mongodb:
 	helm template -n mongodb --show-only templates/database_roles.yaml mongodb/community-operator | kubectl apply -f -
 	helm upgrade mongodb helm/mongodb \
 		-n mongodb --create-namespace --install
-	mkdir ~/.nohup && nohup minikube tunnel -p $(PROFILE_NAME) > ~/.nohup/minikube-tunnel-$(date +%Y-%m-%d-%Hh-%Ss) 2>&1 &
 
 mongodb-clean:
 	helm uninstall mongodb -n mongodb
 	kubectl delete namespace mongodb
-	rm -r ~/.nohup
 
 ######################
 #   data generator   #
@@ -93,3 +100,19 @@ data-generator:
 
 data-generator-clean:
 	helm uninstall data-generator -n data-generator
+
+################
+#   postgres   #
+################
+postgres:
+	helm upgrade postgres helm/postgres \
+		-n postgres --create-namespace --install
+
+postgres-clean:
+	helm uninstall postgres -n postgres
+
+###########################
+#   postgres connection   #
+###########################
+postgres-connection:
+	PGPASSWORD=postgrespassword psql -h localhost -p 5432 -U postgresuser -d postgresdatabase
