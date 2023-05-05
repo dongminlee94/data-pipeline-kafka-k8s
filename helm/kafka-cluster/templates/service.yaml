@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "kafka-cluster.labels" . | nindent 4 }}
+{{ toYaml (merge .Values.service.labels) | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

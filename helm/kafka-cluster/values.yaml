@@ -56,9 +56,11 @@ zookeeper:
     deleteClaim: false
 
 service:
+  labels:
+    strimzi.io/kind: KafkaExporter
   type: LoadBalancer
   port: 9090
-  targetPort: 9404
+  targetPort: 9094
 
 ingress:
   ip: 127.0.0.1

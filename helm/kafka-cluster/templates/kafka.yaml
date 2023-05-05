@@ -34,7 +34,6 @@ spec:
     {{- end }}
     config:
       auto.create.topics.enable: {{ .Values.kafka.config.autoCreateTopicsEnable }}
-      default.replication.factor: {{ .Values.replicaCount }}
       offsets.topic.replication.factor: {{ .Values.replicaCount }}
       transaction.state.log.replication.factor: {{ .Values.replicaCount }}
       transaction.state.log.min.isr: 1
