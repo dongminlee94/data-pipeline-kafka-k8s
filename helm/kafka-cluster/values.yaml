@@ -31,12 +31,9 @@ kafka:
   config:
     autoCreateTopicsEnable: true
   storage:
-    type: jbod
-    volumes:
-    - id: 0
-      type: persistent-claim
-      size: 500Mi
-      deleteClaim: false
+    type: persistent-claim
+    size: 500Mi
+    deleteClaim: false
 
 zookeeper:
   resources: {}
