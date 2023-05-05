@@ -43,7 +43,7 @@ def generate_data(collection: Collection, df: pd.DataFrame) -> None:
     while True:
         insert_data(collection=collection, data=df.sample(1).squeeze(), count=count)
         count += 1
-        time.sleep(1)
+        time.sleep(5)
 
 
 if __name__ == "__main__":

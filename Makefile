@@ -1,7 +1,6 @@
 PYTHON=3.10
 BASENAME=$(shell basename $(CURDIR))
 PROFILE_NAME=iris-data-pipeline-k8s
-DOCKER_IMG_NAME := data-generator
 
 ######################
 #   initialization   #
@@ -39,13 +38,6 @@ lint:
 	pdm run pyright
 	pdm run ruff src --fix
 
-####################
-#   docker image   #
-####################
-docker-image:
-	docker build --platform linux/amd64 -f Dockerfile.$(DOCKER_IMG_NAME) -t ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest . &&\
-	docker push ghcr.io/dongminlee94/$(DOCKER_IMG_NAME):latest
-
 ###############
 #   cluster   #
 ###############
@@ -57,13 +49,13 @@ cluster:
 cluster-clean:
 	minikube delete --profile $(PROFILE_NAME)
 
-#################
-#   localhost   #
-#################
-localhost:
+##############
+#   tunnel   #
+##############
+tunnel:  # for loadbalancer access
 	mkdir ~/.nohup && nohup minikube tunnel -p $(PROFILE_NAME) > ~/.nohup/minikube-tunnel-$(date +%Y-%m-%d-%Hh-%Ss) 2>&1 &
 
-localhost-clean:
+tunnel-clean:
 	rm -r ~/.nohup
 
 #######################
@@ -91,6 +83,13 @@ mongodb-clean:
 	helm uninstall mongodb -n mongodb
 	kubectl delete namespace mongodb
 
+############################
+#   data generator image   #
+############################
+data-generator-image:
+	docker build --platform linux/amd64 -f Dockerfile.data-generator -t ghcr.io/dongminlee94/data-generator:latest . &&\
+	docker push ghcr.io/dongminlee94/data-generator:latest
+
 ######################
 #   data generator   #
 ######################
@@ -116,3 +115,26 @@ postgres-clean:
 ###########################
 postgres-connection:
 	PGPASSWORD=postgrespassword psql -h localhost -p 5432 -U postgresuser -d postgresdatabase
+
+######################
+#   kafka operator   #
+######################
+kafka-operator:
+	helm repo add strimzi https://strimzi.io/charts/
+	helm upgrade kafka-operator strimzi/strimzi-kafka-operator \
+		-n kafka-operator --create-namespace --install \
+		--set watchAnyNamespace=true \
+
+kafka-operator-clean:
+	helm uninstall kafka-operator -n kafka-operator
+
+#####################
+#   kafka cluster   #
+#####################
+kafka-cluster:
+	helm upgrade kafka-cluster helm/kafka-cluster \
+		-n kafka --create-namespace --install
+
+kafka-cluster-clean:
+	helm uninstall kafka-cluster -n kafka
+	kubectl delete -n kafka pvc --all

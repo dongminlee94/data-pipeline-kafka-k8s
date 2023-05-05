@@ -18,10 +18,10 @@ service:
 persistence:
   data:
     accessModes: ["ReadWriteOnce"]
-    size: 10Gi
+    size: 1Gi
   logs:
     accessModes: ["ReadWriteOnce"]
-    size: 1Gi
+    size: 100Mi
 
 ingress:
   ip: 127.0.0.1
