@@ -35,9 +35,9 @@ $ make cluster-clean    # delete the k8s cluster
 ```bash
 $ make mongodb-operator     # create a mongodb operator
 $
-$ make mongodb              # create a mongodb
+$ make mongodb              # create a mongodb (source DB)
 $
-$ make postgres             # create a postgres
+$ make postgres             # create a postgres (target DB)
 ```
 
 You can delete mongodb and postgres.
