@@ -1,3 +1,4 @@
+# Default values for postgres.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -20,7 +21,7 @@ service:
 
 persistence:
   accessModes: ReadWriteOnce
-  size: 10Gi
+  size: 1Gi
 
 ingress:
   ip: 127.0.0.1
