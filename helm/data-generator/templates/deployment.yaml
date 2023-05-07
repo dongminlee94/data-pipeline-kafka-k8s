@@ -23,4 +23,4 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
           - |
-            python src/data_generator.py --db-host mongodb.mongodb.svc.cluster.local
+            python data_generator.py --db-host mongodb.mongodb.svc.cluster.local
