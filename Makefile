@@ -82,7 +82,7 @@ mongodb-clean:
 #   data generator image   #
 ############################
 data-generator-image:
-	docker build --platform linux/amd64 -f docker/data_generator/Dockerfile -t ghcr.io/dongminlee94/data-generator:latest . &&\
+	docker build --platform linux/amd64 -f docker/data-generator/Dockerfile -t ghcr.io/dongminlee94/data-generator:latest . &&\
 	docker push ghcr.io/dongminlee94/data-generator:latest
 
 ######################
@@ -133,3 +133,21 @@ kafka-cluster:
 kafka-cluster-clean:
 	helm uninstall kafka-cluster -n kafka
 	kubectl delete -n kafka pvc --all
+
+#######################
+#   schema registry   #
+#######################
+schema-registry:
+	minikube ssh --profile $(PROFILE_NAME) docker pull confluentinc/cp-schema-registry:7.3.0
+	helm upgrade schema-registry helm/schema-registry \
+		-n kafka --create-namespace --install
+
+schema-registry-clean:
+	helm uninstall schema-registry -n kafka
+
+###########################
+#   kafka connect image   #
+###########################
+kafka-connect-image:
+	docker build --platform linux/amd64 -f docker/kafka-connect/Dockerfile -t ghcr.io/dongminlee94/kafka-connect:latest . &&\
+	docker push ghcr.io/dongminlee94/kafka-connect:latest

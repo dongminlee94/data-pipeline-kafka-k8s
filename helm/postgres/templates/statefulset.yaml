@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - secretRef:
@@ -27,11 +27,11 @@ spec:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         ports:
-        - name: postgres
+        - name: {{ include "postgres.name" . }}
           containerPort: {{ .Values.service.port }}
           protocol: TCP
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+{{ toYaml .Values.resources | indent 10 }}
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
