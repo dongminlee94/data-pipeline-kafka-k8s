@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "iris-data-pipeline-k8s"
+name = "data-pipeline-kafka-k8s"
 version = "0.1.0"
-description = "A data pipeline example for iris data on K8s"
+description = "A data pipeline example using Kafka on K8s"
 authors = ["dongminlee94 <kid33629@gmail.com>"]
 
 [tool.poetry.dependencies]
