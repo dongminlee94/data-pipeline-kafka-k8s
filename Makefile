@@ -5,11 +5,7 @@ PROFILE_NAME=iris-data-pipeline-k8s
 ######################
 install-poetry:
 	@echo "Install poetry";\
-	if [ `command -v pip` ];\
-		then pip install poetry;\
-	else\
-		curl -sSL https://install.python-poetry.org | python3 -;\
-	fi;
+	curl -sSL https://install.python-poetry.org | python3 - --version 1.4.2
 
 init:
 	@echo "Construct development environment";\
@@ -31,7 +27,7 @@ format:
 
 lint:
 	poetry run pyright
-	poetry run ruff . --fix
+	poetry run ruff docker --fix
 
 ###############
 #   cluster   #
