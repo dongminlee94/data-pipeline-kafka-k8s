@@ -1,5 +1,3 @@
-PROFILE_NAME=iris-data-pipeline-k8s
-
 ######################
 #   initialization   #
 ######################
@@ -32,6 +30,8 @@ lint:
 ###############
 #   cluster   #
 ###############
+PROFILE_NAME=iris-data-pipeline-k8s
+
 cluster:
 	minikube start --driver=docker --profile $(PROFILE_NAME) --extra-config=kubelet.housekeeping-interval=10s --cpus=max --memory=max
 	minikube addons enable metrics-server --profile $(PROFILE_NAME)
@@ -78,7 +78,7 @@ mongodb-clean:
 #   data generator image   #
 ############################
 data-generator-image:
-	docker build --platform linux/amd64 -f docker/data-generator/Dockerfile -t ghcr.io/dongminlee94/data-generator:latest . &&\
+	docker build --platform linux/amd64 -f docker/data-generator/Dockerfile -t ghcr.io/dongminlee94/data-generator:latest .
 	docker push ghcr.io/dongminlee94/data-generator:latest
 
 ######################

@@ -20,12 +20,12 @@ kafka:
   listeners:
     plain:
       enabled: true
-      port: 29092
+      port: 9092
       type: internal
       tls: false
     tls:
       enabled: true
-      port: 29093
+      port: 9093
       type: internal
       tls: true
   config:
@@ -56,8 +56,8 @@ service:
   labels:
     strimzi.io/kind: KafkaExporter
   type: LoadBalancer
-  port: 29090
-  targetPort: 29094
+  port: 9090
+  targetPort: 9094
 
 ingress:
   ip: 127.0.0.1

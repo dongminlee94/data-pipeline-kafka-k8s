@@ -9,7 +9,7 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-bootstrapServers: kafka-cluster-kafka-bootstrap:29092
+bootstrapServers: kafka-cluster-kafka-bootstrap:9092
 
 config:
   replicationFactor: 3
