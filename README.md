@@ -60,20 +60,20 @@ You can delete kafka cluster.
 $ make kafka-clean        # delete the kafka cluster
 ```
 
-### 4. Kafka Connect & Schema Registry
+### 4. Schema Registry & Kafka Connect
 
 ```bash
-$ make kafka-connect       # create a kafka connect
-$
 $ make schema-registry     # create a schema registry
+$
+$ make kafka-connect       # create a kafka connect
 ```
 
 You can delete kafka connect and schema registry.
 
 ```bash
-$ make kafka-connect-clean      # delete the kafka connect
-$
 $ make schema-registry-clean    # delete the schema registry
+$
+$ make kafka-connect-clean      # delete the kafka connect
 ```
 
 ## For Developers

@@ -145,7 +145,7 @@ schema-registry-clean:
 #   kafka connect image   #
 ###########################
 kafka-connect-image:
-	docker build --platform linux/amd64 -f docker/kafka-connect/Dockerfile -t ghcr.io/dongminlee94/kafka-connect:latest . &&\
+	docker build --platform linux/amd64 -f docker/kafka-connect/Dockerfile -t ghcr.io/dongminlee94/kafka-connect:latest .
 	docker push ghcr.io/dongminlee94/kafka-connect:latest
 
 #####################
