@@ -1,4 +1,4 @@
-# Iris Data Pipeline K8s
+# Data Pipeline Kafka K8s
 
 ## Prerequisites
 
@@ -8,17 +8,15 @@
 
 ## Preparation
 
-Install [Anaconda](https://docs.anaconda.com/anaconda/install/index.html) and execute the following commands:
+Install Python 3.8 on [Pyenv](https://github.com/pyenv/pyenv#installation) or [Anaconda](https://docs.anaconda.com/anaconda/install/index.html) and execute the following commands:
 
 ```bash
-$ make env      # create a conda environment (need only once)
-$ conda activate iris-data-pipeline-k8s
 $ make init     # setup packages (need only once)
 ```
 
-## How To Play
+## Infra Setup
 
-### 1. K8s Cluster Setup
+### 1. K8s Cluster
 
 ```bash
 $ make cluster          # create a k8s cluster (need only once)
@@ -30,7 +28,7 @@ You can delete the k8s cluster.
 $ make cluster-clean    # delete the k8s cluster
 ```
 
-### 2. Source & Target DB Setup
+### 2. Source & Target DB
 
 ```bash
 $ make mongodb-operator     # create a mongodb operator
@@ -48,7 +46,7 @@ $
 $ make postgres-clean       # delete the postgres
 ```
 
-### 3. Kafka Cluster Setup
+### 3. Kafka Cluster
 
 ```bash
 $ make kafka-operator       # create a kafka operator w/ strimzi
@@ -60,6 +58,22 @@ You can delete kafka cluster.
 
 ```bash
 $ make kafka-clean        # delete the kafka cluster
+```
+
+### 4. Schema Registry & Kafka Connect
+
+```bash
+$ make schema-registry     # create a schema registry
+$
+$ make kafka-connect       # create a kafka connect
+```
+
+You can delete kafka connect and schema registry.
+
+```bash
+$ make schema-registry-clean    # delete the schema registry
+$
+$ make kafka-connect-clean      # delete the kafka connect
 ```
 
 ## For Developers

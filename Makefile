@@ -1,15 +1,9 @@
-PROFILE_NAME=iris-data-pipeline-k8s
-
 ######################
 #   initialization   #
 ######################
 install-poetry:
 	@echo "Install poetry";\
-	if [ `command -v pip` ];\
-		then pip install poetry;\
-	else\
-		curl -sSL https://install.python-poetry.org | python3 -;\
-	fi;
+	curl -sSL https://install.python-poetry.org | python3 - --version 1.4.2
 
 init:
 	@echo "Construct development environment";\
@@ -31,11 +25,13 @@ format:
 
 lint:
 	poetry run pyright
-	poetry run ruff . --fix
+	poetry run ruff docker --fix
 
 ###############
 #   cluster   #
 ###############
+PROFILE_NAME=iris-data-pipeline-k8s
+
 cluster:
 	minikube start --driver=docker --profile $(PROFILE_NAME) --extra-config=kubelet.housekeeping-interval=10s --cpus=max --memory=max
 	minikube addons enable metrics-server --profile $(PROFILE_NAME)
@@ -82,7 +78,7 @@ mongodb-clean:
 #   data generator image   #
 ############################
 data-generator-image:
-	docker build --platform linux/amd64 -f docker/data_generator/Dockerfile -t ghcr.io/dongminlee94/data-generator:latest . &&\
+	docker build --platform linux/amd64 -f docker/data-generator/Dockerfile -t ghcr.io/dongminlee94/data-generator:latest .
 	docker push ghcr.io/dongminlee94/data-generator:latest
 
 ######################
@@ -133,3 +129,31 @@ kafka-cluster:
 kafka-cluster-clean:
 	helm uninstall kafka-cluster -n kafka
 	kubectl delete -n kafka pvc --all
+
+#######################
+#   schema registry   #
+#######################
+schema-registry:
+	minikube ssh --profile $(PROFILE_NAME) docker pull confluentinc/cp-schema-registry:7.3.0
+	helm upgrade schema-registry helm/schema-registry \
+		-n kafka --create-namespace --install
+
+schema-registry-clean:
+	helm uninstall schema-registry -n kafka
+
+###########################
+#   kafka connect image   #
+###########################
+kafka-connect-image:
+	docker build --platform linux/amd64 -f docker/kafka-connect/Dockerfile -t ghcr.io/dongminlee94/kafka-connect:latest .
+	docker push ghcr.io/dongminlee94/kafka-connect:latest
+
+#####################
+#   kafka connect   #
+#####################
+kafka-connect:
+	helm upgrade kafka-connect helm/kafka-connect \
+		-n kafka --create-namespace --install
+
+kafka-connect-clean:
+	helm uninstall kafka-connect -n kafka

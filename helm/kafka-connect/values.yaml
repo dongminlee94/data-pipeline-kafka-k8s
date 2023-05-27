@@ -1,0 +1,15 @@
+# Default values for kafka-connect.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/dongminlee94/kafka-connect
+  tag: latest
+  pullPolicy: IfNotPresent
+
+bootstrapServers: kafka-cluster-kafka-bootstrap:9092
+
+config:
+  replicationFactor: 3
