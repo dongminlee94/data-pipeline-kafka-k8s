@@ -107,6 +107,16 @@ postgres-clean:
 postgres-connection:
 	PGPASSWORD=postgrespassword psql -h localhost -p 5432 -U postgresuser -d postgresdatabase
 
+#############
+#   redis   #
+#############
+redis:
+	helm upgrade redis helm/redis \
+		-n redis --create-namespace --install
+
+redis-clean:
+	helm uninstall redis -n redis
+
 ######################
 #   kafka operator   #
 ######################
