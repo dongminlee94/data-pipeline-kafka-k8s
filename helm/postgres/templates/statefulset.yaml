@@ -17,7 +17,7 @@ spec:
         {{- include "postgres.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-      - name: postgres
+      - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
@@ -27,7 +27,7 @@ spec:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         ports:
-        - name: {{ include "postgres.name" . }}
+        - name: {{ .Chart.Name }}
           containerPort: {{ .Values.service.port }}
           protocol: TCP
         resources:

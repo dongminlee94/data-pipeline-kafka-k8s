@@ -22,7 +22,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - name: {{ include "schema-registry.name" . }}
+        - name: {{ .Chart.Name }}
           containerPort: {{ .Values.service.port }}
           protocol: TCP
         env:

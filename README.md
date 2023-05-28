@@ -28,7 +28,7 @@ You can delete the k8s cluster.
 $ make cluster-clean    # delete the k8s cluster
 ```
 
-### 2. Source & Target DB
+### 2. Source DB, Target DB, and Message Queue
 
 ```bash
 $ make mongodb-operator     # create a mongodb operator
@@ -36,14 +36,18 @@ $
 $ make mongodb              # create a mongodb (source DB)
 $
 $ make postgres             # create a postgres (target DB)
+$
+$ make redis                # create a redis (message queue)
 ```
 
-You can delete mongodb and postgres.
+You can delete mongodb, postgres, and redis.
 
 ```bash
 $ make mongodb-clean        # delete the mongodb
 $
 $ make postgres-clean       # delete the postgres
+$
+$ make redis-clean          # delete the redis
 ```
 
 ### 3. Kafka Cluster
