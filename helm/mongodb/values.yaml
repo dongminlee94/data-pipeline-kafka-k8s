@@ -7,8 +7,8 @@ replicaCount: 1
 version: 6.0.1
 
 env:
-  MONGO_USER: mongouser
-  MONGO_PASSWORD: mongopassword
+  MONGO_USER: mongo
+  MONGO_PASSWORD: mongo
 
 service:
   type: LoadBalancer
