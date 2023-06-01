@@ -1,23 +1,13 @@
 """Data generator."""
-import time
-from argparse import ArgumentParser
+from time import sleep
 
 import pandas as pd
 from pymongo import MongoClient
-from pymongo.collection import Collection
 from sklearn.datasets import load_iris
 
 
-def create_collection(client: MongoClient) -> Collection:
-    """Create collection."""
-    database = client["mongodatabase"]
-    if "iris_data" not in database.list_collection_names():
-        database.create_collection("iris_data")
-    return database["iris_data"]
-
-
-def get_data() -> pd.DataFrame:
-    """Get data."""
+def load_data() -> pd.DataFrame:
+    """Load data."""
     inputs, labels = load_iris(return_X_y=True, as_frame=True)
     df = pd.concat([inputs, labels], axis="columns")
     rename_rule = {
@@ -30,31 +20,32 @@ def get_data() -> pd.DataFrame:
     return df
 
 
-def insert_data(collection: Collection, data: pd.Series, count: int) -> None:
-    """Insert data."""
-    doc = data.to_dict()
-    print(count, doc)
-    collection.insert_one(doc)
+def main(mongo_client: MongoClient) -> None:
+    """Run main function."""
+    # Create a collection
+    collection = mongo_client["mongo"]["iris_data"]
 
+    # Load iris data
+    df = load_data()
 
-def generate_data(collection: Collection, df: pd.DataFrame) -> None:
-    """Generate data."""
-    count = 0
+    # Generate data continuously
+    cnt = 0
     while True:
-        insert_data(collection=collection, data=df.sample(1).squeeze(), count=count)
-        count += 1
-        time.sleep(5)
+        doc = df.sample(1).squeeze().to_dict()
+        result = collection.insert_one(doc)
+        print(
+            f"\nCount: {cnt}\n" f"ObjectID: {str(result.inserted_id)}\n" f"Doc: {doc}\n",
+        )
+
+        cnt += 1
+        sleep(5)
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument("--db-host", dest="db_host", type=str, default="localhost")
-    args = parser.parse_args()
-
-    client = MongoClient(
-        username="mongouser",
-        password="mongopassword",
-        host=args.db_host,
+    mongo_client = MongoClient(
+        username="mongo",
+        password="mongo",
+        host="mongodb.mongodb.svc.cluster.local",
         port=27017,
         authSource="admin",
         connectTimeoutMS=60000,
@@ -62,6 +53,4 @@ if __name__ == "__main__":
         directConnection=True,
         ssl=False,
     )
-    collection = create_collection(client=client)
-    df = get_data()
-    generate_data(collection=collection, df=df)
+    main(mongo_client=mongo_client)

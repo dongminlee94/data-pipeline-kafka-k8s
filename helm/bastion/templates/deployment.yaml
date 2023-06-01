@@ -1,28 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "data-generator.name" . }}
+  name: {{ include "bastion.name" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "data-generator.labels" . | nindent 4 }}
+    {{- include "bastion.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      {{- include "data-generator.selectorLabels" . | nindent 6 }}
+      {{- include "bastion.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "data-generator.selectorLabels" . | nindent 8 }}
+        {{- include "bastion.selectorLabels" . | nindent 8 }}
     spec:
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ["/bin/bash", "-c"]
-        args:
-        - |
-          python data_generator.py
+        command: ["sleep", "infinity"]
         resources:
 {{ toYaml .Values.resources | indent 10 }}

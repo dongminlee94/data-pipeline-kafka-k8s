@@ -1,6 +1,6 @@
-######################
-#   initialization   #
-######################
+# ========================================================================================
+# ======================================== Basics ========================================
+# ========================================================================================
 install-poetry:
 	@echo "Install poetry";\
 	curl -sSL https://install.python-poetry.org | python3 - --version 1.4.2
@@ -15,9 +15,6 @@ init:
 	poetry install
 	poetry run pre-commit install
 
-#######################
-#   static analysis   #
-#######################
 check: format lint
 
 format:
@@ -27,9 +24,9 @@ lint:
 	poetry run pyright
 	poetry run ruff docker --fix
 
-###############
-#   cluster   #
-###############
+# ============================================================================================
+# ======================================== Kubernetes ========================================
+# ============================================================================================
 PROFILE_NAME=iris-data-pipeline-k8s
 
 cluster:
@@ -40,18 +37,15 @@ cluster:
 cluster-clean:
 	minikube delete --profile $(PROFILE_NAME)
 
-##############
-#   tunnel   #
-##############
 tunnel:  # for loadbalancer access
 	mkdir ~/.nohup && nohup minikube tunnel -p $(PROFILE_NAME) > ~/.nohup/minikube-tunnel-$(date +%Y-%m-%d-%Hh-%Ss) 2>&1 &
 
 tunnel-clean:
 	rm -r ~/.nohup
 
-#######################
-#   mongodb-operator  #
-#######################
+# ==========================================================================================================
+# ======================================== Database & Message Queue ========================================
+# ==========================================================================================================
 mongodb-operator:
 	helm repo add mongodb https://mongodb.github.io/helm-charts
 	helm upgrade community-operator mongodb/community-operator \
@@ -61,9 +55,6 @@ mongodb-operator:
 mongodb-operator-clean:
 	helm uninstall community-operator -n mongodb-operator
 
-###############
-#   mongodb   #
-###############
 mongodb:
 	kubectl create namespace mongodb
 	helm template -n mongodb --show-only templates/database_roles.yaml mongodb/community-operator | kubectl apply -f -
@@ -74,26 +65,6 @@ mongodb-clean:
 	helm uninstall mongodb -n mongodb
 	kubectl delete namespace mongodb
 
-############################
-#   data generator image   #
-############################
-data-generator-image:
-	docker build --platform linux/amd64 -f docker/data-generator/Dockerfile -t ghcr.io/dongminlee94/data-generator:latest .
-	docker push ghcr.io/dongminlee94/data-generator:latest
-
-######################
-#   data generator   #
-######################
-data-generator:
-	helm upgrade data-generator helm/data-generator \
-		-n data-generator --create-namespace --install
-
-data-generator-clean:
-	helm uninstall data-generator -n data-generator
-
-################
-#   postgres   #
-################
 postgres:
 	helm upgrade postgres helm/postgres \
 		-n postgres --create-namespace --install
@@ -101,15 +72,6 @@ postgres:
 postgres-clean:
 	helm uninstall postgres -n postgres
 
-###########################
-#   postgres connection   #
-###########################
-postgres-connection:
-	PGPASSWORD=postgrespassword psql -h localhost -p 5432 -U postgresuser -d postgresdatabase
-
-#############
-#   redis   #
-#############
 redis:
 	helm upgrade redis helm/redis \
 		-n redis --create-namespace --install
@@ -117,9 +79,36 @@ redis:
 redis-clean:
 	helm uninstall redis -n redis
 
-######################
-#   kafka operator   #
-######################
+# ==========================================================================================================
+# ======================================== Data Generator & Bastion ========================================
+# ==========================================================================================================
+data-generator-image:
+	docker build --platform linux/amd64 -f docker/data-generator/Dockerfile -t ghcr.io/dongminlee94/data-generator:latest .
+	docker push ghcr.io/dongminlee94/data-generator:latest
+	docker rmi ghcr.io/dongminlee94/data-generator
+
+data-generator:
+	helm upgrade data-generator helm/data-generator \
+		-n data-generator --create-namespace --install
+
+data-generator-clean:
+	helm uninstall data-generator -n data-generator
+
+bastion-image:
+	docker build --platform linux/amd64 -f docker/bastion/Dockerfile -t ghcr.io/dongminlee94/bastion:latest .
+	docker push ghcr.io/dongminlee94/bastion:latest
+	docker rmi ghcr.io/dongminlee94/bastion
+
+bastion:
+	helm upgrade bastion helm/bastion \
+		-n bastion --create-namespace --install
+
+bastion-clean:
+	helm uninstall bastion -n bastion
+
+# =======================================================================================
+# ======================================== Kafka ========================================
+# =======================================================================================
 kafka-operator:
 	helm repo add strimzi https://strimzi.io/charts/
 	helm upgrade kafka-operator strimzi/strimzi-kafka-operator \
@@ -129,9 +118,6 @@ kafka-operator:
 kafka-operator-clean:
 	helm uninstall kafka-operator -n kafka-operator
 
-#####################
-#   kafka cluster   #
-#####################
 kafka-cluster:
 	helm upgrade kafka-cluster helm/kafka-cluster \
 		-n kafka --create-namespace --install
@@ -140,9 +126,6 @@ kafka-cluster-clean:
 	helm uninstall kafka-cluster -n kafka
 	kubectl delete -n kafka pvc --all
 
-#######################
-#   schema registry   #
-#######################
 schema-registry:
 	minikube ssh --profile $(PROFILE_NAME) docker pull confluentinc/cp-schema-registry:7.3.0
 	helm upgrade schema-registry helm/schema-registry \
@@ -151,16 +134,11 @@ schema-registry:
 schema-registry-clean:
 	helm uninstall schema-registry -n kafka
 
-###########################
-#   kafka connect image   #
-###########################
 kafka-connect-image:
 	docker build --platform linux/amd64 -f docker/kafka-connect/Dockerfile -t ghcr.io/dongminlee94/kafka-connect:latest .
 	docker push ghcr.io/dongminlee94/kafka-connect:latest
+	docker rmi ghcr.io/dongminlee94/kafka-connect
 
-#####################
-#   kafka connect   #
-#####################
 kafka-connect:
 	helm upgrade kafka-connect helm/kafka-connect \
 		-n kafka --create-namespace --install
