@@ -1,0 +1,28 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: {{ include "kafka-connector-source.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kafka-connector-source.labels" . | nindent 4 }}
+    # The strimzi.io/cluster label identifies the KafkaConnect instance
+    # in which to create this connector. That KafkaConnect instance
+    # must have the strimzi.io/use-connector-resources annotation
+    # set to true.
+    strimzi.io/cluster: {{ .Values.labels.connectInstanceName }}
+spec:
+  class: com.mongodb.kafka.connect.MongoSourceConnector
+  config:
+    connection.url: mongodb://mongo:mongo@mongodb.mongodb.svc.cluster.local:27017/?directConnection=true&ssl=false
+    database: mongo
+    collection: iris_data
+    topic.prefix: source
+    tasks.max: 2
+    copy.existing: true
+    publish.full.document.only: true
+    key.converter: org.apache.kafka.connect.json.JsonConverter
+    key.converter.schema.registry.url: http://schema-registry:8081
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+    value.converter.schema.registry.url: http://schema-registry:8081
+    pipeline: >
+      [{"$match":{"operationType":{"$in":["insert","update","replace"]}}},{"$project":{"_id":1,"fullDocument":1,"ns":1,"documentKey":1}}]

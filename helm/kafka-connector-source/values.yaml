@@ -1,0 +1,19 @@
+# Default values for kafka-connector-source.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+labels:
+  connectInstanceName: kafka-connect
+
+class: com.mongodb.kafka.connect.MongoSourceConnector
+
+config:
+  connectionUrl: mongodb://mongo:mongo@mongodb.mongodb.svc.cluster.local:27017/?directConnection=true&ssl=false
+  database: mongo
+  collection: iris_data
+  topicPrefix: source
+  tasksMax: 2
+  copyExisting: true
+  publishFullDocumentOnly: true
+  converter: org.apache.kafka.connect.json.JsonConverter
+  converterSchemaRegistryUrl: http://schema-registry:8081
