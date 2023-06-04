@@ -27,7 +27,7 @@ lint:
 # ============================================================================================
 # ======================================== Kubernetes ========================================
 # ============================================================================================
-PROFILE_NAME=iris-data-pipeline-k8s
+PROFILE_NAME=data-pipeline-kafka-k8s
 
 cluster:
 	minikube start --driver=docker --profile $(PROFILE_NAME) --extra-config=kubelet.housekeeping-interval=10s --cpus=max --memory=max
@@ -145,3 +145,10 @@ kafka-connect:
 
 kafka-connect-clean:
 	helm uninstall kafka-connect -n kafka
+
+kafka-connector-source:
+	helm upgrade kafka-connector-source helm/kafka-connector-source \
+		-n kafka --create-namespace --install
+
+kafka-connector-source-clean:
+	helm uninstall kafka-connector-source -n kafka
