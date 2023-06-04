@@ -47,9 +47,6 @@ if __name__ == "__main__":
         password="mongo",
         host="mongodb.mongodb.svc.cluster.local",
         port=27017,
-        authSource="admin",
-        connectTimeoutMS=60000,
-        readPreference="primary",
         directConnection=True,
         ssl=False,
     )

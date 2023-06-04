@@ -7,7 +7,6 @@ replicaCount: 1
 image:
   repository: ghcr.io/dongminlee94/kafka-connect
   tag: latest
-  pullPolicy: Always
 
 bootstrapServers: kafka-cluster-kafka-bootstrap:9092
 
